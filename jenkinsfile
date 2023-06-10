@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pull code from repository
+                git 'https://github.com/your-repo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+			    withCredentials([usernamePassword(credentialsId: 'DOCKERSECRETS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){
+                script {
+                    // Set up Docker environment
+                    def dockerCmd = "docker"
+
+                    // Build Docker image
+                    sh "${dockerCmd} build -t ${dockerRegistry}/${dockerRepository}:${dockerTag} ."
+
+                    // Check for build errors
+                    def buildError = sh(
+                        script: "${dockerCmd} build -t ${dockerRegistry}/${dockerRepository}:${dockerTag} .",
+                        returnStatus: true
+                    )
+
+                    // Push Docker image if build successful
+                    if (buildError == 0) {
+                        sh "${dockerCmd} login -u $DOCKER_USERNAME -p DOCKER_PASSWORD"
+                        sh "${dockerCmd} push ${dockerRegistry}/${dockerRepository}:${dockerTag}"
+                    } else {
+                        error 'Build failed. Please check the build logs for errors.'
+                    }
+                }
+            }
+        }
+    }
+}
+}
