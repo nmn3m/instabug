@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Pull code from repository
-                git 'https://github.com/your-repo.git'
+                git 'https://github.com/nmn3m/instabug.git'
             }
         }
 
