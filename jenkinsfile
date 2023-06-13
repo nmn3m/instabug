@@ -2,15 +2,14 @@ pipeline {
     agent {
 		docker { image 'docker:24.0.2-cli'}
 	}
-
-   // stages {
-    //    stage('Checkout') {
+  //    stage('Checkout') {
      //       steps {
                 // Pull code from repository
       //          git branch: 'main', url: 'https;//github.com/nmn3m'
        //     }
        // }
 
+   stages {
         stage('Build') {
             steps {
                 script {
@@ -47,4 +46,4 @@ pipeline {
             }
         }
     }
-
+}
