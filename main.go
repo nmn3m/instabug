@@ -15,9 +15,13 @@ type handler struct {
 }
 
 type row struct {
-	id        int64
-	createdAt time.Time
+	id                int64
+	// add `json:"-"`
+	createdAt         time.Time `json:"-"`
+	// added this line
+	CreatedAtFormatted string
 }
+
 
 func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/healthcheck" {
