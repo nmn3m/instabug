@@ -2,7 +2,7 @@ pipeline {
     agent any
     // agent {
 		// docker { image 'docker:24.0.2-dind-rootless'}
-	}
+	// }
   //    stage('Checkout') {
      //       steps {
                 // Pull code from repository
