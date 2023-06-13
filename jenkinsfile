@@ -1,45 +1,45 @@
-pipeline {
-    
-    agent {
-		 docker { image 'docker:24.0.2-dind-rootless'}
-	}
-  
-
+pipeline{
+   agent { label('build || test') }
+   environment {
+   	DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+   }
    stages {
-        stage('Build') {
-            steps {
-                script {
-                    // Set up Docker environment
-                    def dockerImage = 'instabug'
-                    def dockerCmd = "docker"
-                    def dockerRegistry = 'docker.io'
-                    def dockerRepository = 'nmn3m/instabug'
-                    def dockerTag = 'latest'
-                    def dockerCredentialId = 'your-docker-credential-id'
-
-                    // Build Docker image
-                    sh "${dockerCmd} build -t ${dockerRegistry}/${dockerRepository}:${dockerTag} ."
-
-                    // Check for build errors
-                    def buildError = sh(
-                        script: "${dockerCmd} build -t ${dockerRegistry}/${dockerRepository}:${dockerTag} .",
-                        returnStatus: true
-                    )
-
-                    // Push Docker image if build successful
-                    if (buildError == 0) {
-                        // Docker login
-                        withCredentials([usernamePassword(credentialsId: dockerCredentialId, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            sh "${dockerCmd} login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-                        }
-
-                        // Push Docker image
-                        sh "${dockerCmd} push ${dockerRegistry}/${dockerRepository}:${dockerTag}"
-                    } else {
-                        error 'Build failed. Please check the build logs for errors.'
-                    }
-                }
-            }
-        }
-    }
+       stage('gitclone') {
+           agent {
+                 label 'build'
+                 }
+   		steps {
+   			git 'https://github.com/nmn3m/instabug.git'
+   		}
+   	}
+   	stage('Build') {
+           agent {
+                 label 'build'
+                 }
+   		steps {
+   			sh 'docker build -t nmn3m/instabug:v1 .'
+   		}
+   	}
+   	stage('Login') {
+           agent {
+                 label 'build'
+                 }
+   		steps {
+   			sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+   		}
+   	}
+   	stage('Push') {
+           agent {
+                 label 'build'
+                 }
+   		steps {
+   			sh 'docker push nmn3m/instabug:v1'
+   		}
+   	}
+   }
+   post {
+        always {
+   	     	sh 'docker logout'
+   	}
+   }
 }
