@@ -1,20 +1,24 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
+   // stages {
+    //    stage('Checkout') {
+     //       steps {
                 // Pull code from repository
-				git branch: 'main', url: 'https://github.com/nmn3m/instabug.git'
-            }
-        }
+      //          git branch: 'main', url: 'https;//github.com/nmn3m'
+       //     }
+       // }
 
         stage('Build') {
             steps {
-			    withCredentials([usernamePassword(credentialsId: 'DOCKERSECRETS', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]){
                 script {
                     // Set up Docker environment
+                    def dockerImage = 'instabug'
                     def dockerCmd = "docker"
+                    def dockerRegistry = 'docker.io'
+                    def dockerRepository = 'nmn3m/instabug'
+                    def dockerTag = 'latest'
+                    def dockerCredentialId = 'your-docker-credential-id'
 
                     // Build Docker image
                     sh "${dockerCmd} build -t ${dockerRegistry}/${dockerRepository}:${dockerTag} ."
@@ -27,7 +31,12 @@ pipeline {
 
                     // Push Docker image if build successful
                     if (buildError == 0) {
-                        sh "${dockerCmd} login -u $DOCKER_USERNAME -p DOCKER_PASSWORD"
+                        // Docker login
+                        withCredentials([usernamePassword(credentialsId: dockerCredentialId, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                            sh "${dockerCmd} login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                        }
+
+                        // Push Docker image
                         sh "${dockerCmd} push ${dockerRegistry}/${dockerRepository}:${dockerTag}"
                     } else {
                         error 'Build failed. Please check the build logs for errors.'
@@ -37,4 +46,4 @@ pipeline {
         }
     }
 }
-}
+
