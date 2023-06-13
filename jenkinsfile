@@ -1,6 +1,7 @@
 pipeline {
-    agent {
-		docker { image 'docker:24.0.2-dind-rootless'}
+    agent any
+    // agent {
+		// docker { image 'docker:24.0.2-dind-rootless'}
 	}
   //    stage('Checkout') {
      //       steps {
