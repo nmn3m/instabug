@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm.fullname" . }}-instabug-app-mysql
+  labels:
+    app: instabug-app-mysql
+  {{- include "helm.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.instabugAppMysql.type }}
+  selector:
+    app: instabug-app-mysql
+  {{- include "helm.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.instabugAppMysql.ports | toYaml | nindent 2 -}}

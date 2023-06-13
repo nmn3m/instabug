@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "helm.fullname" . }}-app-sql-secret
+  labels:
+  {{- include "helm.labels" . | nindent 4 }}
+stringData:
+  MYSQL_HOST: {{ required "appSqlSecret.mysqlHost is required" .Values.appSqlSecret.mysqlHost
+    | quote }}
+  MYSQL_PASS: {{ required "appSqlSecret.mysqlPass is required" .Values.appSqlSecret.mysqlPass
+    | quote }}
+  MYSQL_PORT: {{ required "appSqlSecret.mysqlPort is required" .Values.appSqlSecret.mysqlPort
+    | quote }}
+  MYSQL_USER: {{ required "appSqlSecret.mysqlUser is required" .Values.appSqlSecret.mysqlUser
+    | quote }}
+type: Opaque

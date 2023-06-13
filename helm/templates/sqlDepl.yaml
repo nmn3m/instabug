@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm.fullname" . }}-instabug-mysql
+  labels:
+    app: instabug-mysql
+  {{- include "helm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.instabugMysql.replicas }}
+  selector:
+    matchLabels:
+      app: instabug-mysql
+      tier: mysql
+    {{- include "helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: instabug-mysql
+        tier: mysql
+      {{- include "helm.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        envFrom:
+        - secretRef:
+            name: {{ include "helm.fullname" . }}-mysql-secret
+        image: {{ .Values.instabugMysql.mysql.image.repository }}:{{ .Values.instabugMysql.mysql.image.tag
+          | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.instabugMysql.mysql.imagePullPolicy }}
+        name: mysql
+        ports:
+        - containerPort: 3306
+          name: mysql
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-persistent-storage
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: {{ include "helm.fullname" . }}-mysql-pv-claim

@@ -1,0 +1,35 @@
+appSqlSecret:
+  mysqlHost: "insta-helm-instabug-mysql"
+  mysqlPass: "root"
+  mysqlPort: "3306"
+  mysqlUser: "root"
+instabugAppMysql:
+  instabugAppMysql:
+    image:
+      repository: nmn3m/helm
+      tag: latest
+    imagePullPolicy: IfNotPresent
+  ports:
+  - name: http
+    port: 9090
+    targetPort: 9090
+  replicas: 1
+  type: NodePort
+instabugMysql:
+  mysql:
+    image:
+      repository: mysql
+      tag: latest
+    imagePullPolicy: IfNotPresent
+  ports:
+  - port: 3306
+    targetPort: 0
+  replicas: 1
+  type: NodePort
+kubernetesClusterDomain: cluster.local
+mysqlSecret:
+  mysqlRootPassword: "root"
+pvc:
+  mysqlPvClaim:
+    storageClass: manual
+    storageRequest: 5Gi
