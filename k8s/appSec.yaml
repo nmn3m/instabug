@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-sql-secret
+type: Opaque
+stringData:   # We dont need to worry about converting to base64
+  MYSQL_USER: root
+  MYSQL_PASS: root 
+  MYSQL_HOST: instabug-mysql
+  MYSQL_PORT: "3306"

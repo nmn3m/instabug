@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: instabug-app-mysql
+  labels:
+    app: instabug-app-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: instabug-app-mysql
+  template:
+    metadata:
+      labels:
+        app: instabug-app-mysql
+    spec:
+      containers:
+      - name: instabug-app-mysql
+        image: nmn3m/helm:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: http
+            containerPort: 9090
+        envFrom:
+          - secretRef:
+              name: app-sql-secret
+          - secretRef:
+              name: mysql-secret
+
