@@ -4,6 +4,7 @@
 3. [CI-CD](#cicd)
 4. [GitOps](#gitops)
 5. [Testing API](#testing)
+6. [Security Testing](#sec)
 
 
 ## Information about App.<a name="info"></a>
@@ -74,3 +75,5 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 		![afterpatch](./img/afterpost.png)
 	- after
 		![afterpatch](./img/afterpatch.png)
+## Security Testing <a name="sec"></a>
+- i used tool called `Trivy` to check all docker file and k8s manifest file you will find file called `Security Report`.
